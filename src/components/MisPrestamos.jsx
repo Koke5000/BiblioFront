@@ -1,17 +1,29 @@
 import { useOutletContext } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getLibrosPrestados, putPrestados } from "../services/libros.service";
 
 export default function MisPrestamos(){
+    const [cargaPrestados, setCargaPrestados] = useState(false);
+    const [librosPrestados, setLibrosPrestados] = useState([]);
+
+    useEffect(() => {
+        getLibrosPrestados(setLibrosPrestados);
+        setCargaPrestados(false)
+    }, [cargaPrestados]);
+
+    function devolverLibro(libro){
+        putPrestados(libro, setCargaPrestados)
+    }
     return(
         <>
-           {/*  <br />
             <br />
-            <BarraBusqueda filterText={filterText} setFilterText={setFilterText}/>
+            <h2>Mis Prestamos</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Titulo</th>
                         <th>Autor</th>
-                        <th>Disponibles</th>
+                        <th>Fecha prestamo</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -20,19 +32,12 @@ export default function MisPrestamos(){
                         <tr key={libro.id}>
                             <td>{libro.titulo}</td>
                             <td>{libro.autor}</td>
-                            <td>{libro.disponibles}</td>
+                            <td>{libro.fechaPrestamo}</td>
                             <td><button onClick={()=>devolverLibro(libro)}>Devolver</button></td>
                         </tr>
                     ))}
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <th>Pagina 1 de total</th>
-                        <th><button>Anterior</button></th>
-                        <th><button>Siguiente</button></th>
-                    </tr>
-                </tfoot>
-            </table> */}
+            </table>
         </>
     )
 }

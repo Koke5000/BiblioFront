@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { iniciarSesion } from "../services/usuarios.service";
 
-export default function InicioSesion({setUsuario, email, setEmail}){
+export default function InicioSesion({setUsuario}){
         
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorInicioSesion, setErrorInicioSesion]=useState('')
 
     return(
         <>
@@ -13,8 +15,10 @@ export default function InicioSesion({setUsuario, email, setEmail}){
 
             <label>Password:<input type="password" value={password} 
             onChange={(e) => setPassword(e.target.value)} /></label>
-            <br /><br />
-            <button onClick={()=>{iniciarSesion(email, password, setUsuario)}}>Iniciar Sesion</button>
+            <br />
+            <span>{errorInicioSesion}</span>
+            <br />
+            <button onClick={()=>{iniciarSesion(email, password, setUsuario, setErrorInicioSesion)}}>Iniciar Sesion</button>
         </>
     )
 }

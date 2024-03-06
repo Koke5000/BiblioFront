@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useOutletContext, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { registrarUsuario } from "../services/usuarios.service";
 
 export default function RegistrarUsuario(){
@@ -8,7 +8,7 @@ export default function RegistrarUsuario(){
     const [nombre, setNombre] = useState('');
     const [apellidos, setApellidos] = useState('');
 
-    const {email: [email, setEmail]} = useOutletContext();
+    const [email, setEmail] = useState('');
 
     const [password, setPassword] = useState('');
     const [repetirPassword, setRepetirPassword] = useState('');
@@ -20,24 +20,23 @@ export default function RegistrarUsuario(){
 
 
     function validarPassword() {
-        const contraseña = document.getElementById("password");
-        const error = document.getElementById("errorPassword");
         let patron = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm;
-        if (!patron.test(contraseña.value)) { 
-            contraseña.classList.add("invalido");
-            error.innerText = "Contraseña con formato incorrecto";
+        if (!patron.test(password)) { 
+            setPasswordError("Debe tener una mayuscula, una minuscula y un numero");
             return false;
         } else {
-            contraseña.classList.remove("invalido");
-            error.innerText = "";
+            setPasswordError("");
             return true;
         }
     }
     
     function validarRepetirPassword() {
         let patron = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm;
-        if (!patron.test(repetirPassword || password !== repetirPassword)) { 
+        if (!patron.test(repetirPassword)) { 
             setRepetirPasswordError("Contraseña mal puesta");
+            return false;
+        } else if (password !== repetirPassword) {
+            setRepetirPasswordError("Las contraseñas no coinciden");
             return false;
         } else {
             setRepetirPasswordError("");

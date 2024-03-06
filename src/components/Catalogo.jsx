@@ -1,29 +1,46 @@
 import { useEffect, useState } from "react";
 import BarraBusqueda from './BarraBusqueda'
 import { useOutletContext } from "react-router-dom";
-import { getCatalogo } from "../services/libros.service";
+import { getCatalogo, postPrestados } from "../services/libros.service";
+import { getPaginasTotal, getPaginasBusqueda } from "../services/paginas.service";
+
 
 export default function Catalogo(){
     const {usuario: [usuario, setUsuario]} = useOutletContext()
-    const {cargaLibros: [cargaLibros, setCargaLibros]} = useOutletContext()
-    const {cargaPrestados: [cargaPrestados, setCargaPrestados]} = useOutletContext()
+    const [cargaLibros, setCargaLibros] = useState(false);
     const [filterText, setFilterText] = useState('');
     const [libros, setLibros] = useState([]);
 
+    const [total, setTotal] = useState(0);
+    const [pagina, setPagina] = useState(0);
+
     useEffect(() => {
-        getCatalogo(setLibros, filterText);
+        getCatalogo(pagina, setLibros, filterText);
+        if (filterText!=="") {
+            getPaginasBusqueda(setTotal, filterText);
+        }else{
+            getPaginasTotal(setTotal);
+        }
         setCargaLibros(false)
-    }, [filterText, cargaLibros]);
+    }, [filterText, cargaLibros, pagina]);
 
-    function prestarLibro(){
+    useEffect(() => {
+        setPagina(0);
+        setCargaLibros(true)
+    }, [filterText]);
 
+    function prestarLibro(libro){
+        postPrestados(libro, setCargaLibros)
     }
 
     return(
         <>
             <br />
-            <br />
-            <BarraBusqueda filterText={filterText} setFilterText={setFilterText}/>
+            <h2>Catalogo</h2>
+
+
+            <BarraBusqueda filterText={filterText} setFilterText={setFilterText} setPagina={setPagina}/>
+
             <table>
                 <thead>
                     <tr>
@@ -45,9 +62,9 @@ export default function Catalogo(){
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th>Pagina 1 de total</th>
-                        <th><button>Anterior</button></th>
-                        <th><button>Siguiente</button></th>
+                        <th>Pagina {pagina+1} de {total+1}</th>
+                        {pagina+1!==1?<th><button onClick={()=>setPagina(pagina - 1)}>Anterior</button></th>:<th></th>}
+                        {pagina+1==total+1?<th></th>:<th><button onClick={()=>setPagina(pagina + 1)}>Siguiente</button></th>}
                     </tr>
                 </tfoot>
             </table>

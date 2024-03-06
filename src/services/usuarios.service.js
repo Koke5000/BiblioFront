@@ -1,27 +1,42 @@
-const iniciarSesion = async (email, password, setUsuario) => {
-  fetch("http://localhost:8080/api/usuarios/login", {
+import URL_SERVER from "../../constantes";
+const iniciarSesion = async (email, password, setUsuario, setErrorInicioSesion) => {
+  fetch(URL_SERVER + "api/usuarios/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password }),
   })
-    .then((data) => data.json())
-    .then((json) => {
-      localStorage.setItem("token", JSON.stringify(json.token));
-      setUsuario(json.usuario);
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Verifique su usuario y contraseña.");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      localStorage.setItem("token", JSON.stringify(data.token));
+      setUsuario(data.usuario);
+    })
+    .catch((err) => {
+      setErrorInicioSesion(err.message);
+      console.error("ERROR: ", err.message);
     });
 };
 
 
+
+
 const registrarUsuario = async (nombre,apellidos,email,password) => {
-  const data = await fetch("http://localhost:8080/api/usuarios/registro", {
+  fetch(URL_SERVER+"api/usuarios/registro", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ nombre, apellidos, email, password }),
-  });
+  })    
+  .catch(err => {
+    console.error("ERROR: ", err.message)
+})  
 };
 
 
